@@ -34,10 +34,27 @@ def average_body_mass_by_species_and_sex(data):
         if sex not in sex_list:
             sex_list.append(sex)
 
-    print(species_list)
-    print(sex_list)
-    return species_list, sex_list
+    #print(species_list)
+    ##print(sex_list)
+    
 
+    result = {}
+    for species in species_list:
+        result[species] = {}
+        for sex in sex_list:
+            total_mass = 0
+            count = 0
+            for row in data:
+                if row.get("species") == species and row.get("sex") == sex:
+                    body_mass = row.get("body_mass_g")
+                    if body_mass and body_mass != '':
+                        total_mass += float(body_mass)
+                        count += 1
+            if count > 0:
+                average_mass = total_mass / count
+                result[species][sex] = average_mass
+    print(result)
+    return result
 
 
 
