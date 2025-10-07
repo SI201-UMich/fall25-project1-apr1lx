@@ -47,9 +47,12 @@ def average_body_mass_by_species_and_sex(data):
             for row in data:
                 if row.get("species") == species and row.get("sex") == sex:
                     body_mass = row.get("body_mass_g")
-                    if body_mass and body_mass != '':
-                        total_mass += float(body_mass)
-                        count += 1
+                    if body_mass and body_mass not in ('', 'NA', 'na', None):
+                        try:
+                            total_mass += float(body_mass)
+                            count += 1
+                        except:
+                            pass
             if count > 0:
                 average_mass = total_mass / count
                 result[species][sex] = average_mass
