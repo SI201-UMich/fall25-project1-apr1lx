@@ -22,5 +22,26 @@ def filter_by_species(data, species):
             filtered.append(row)
     return filtered
 
+### calculation #1: Average Body Mass by Species and Sex
+def average_body_mass_by_species_and_sex(data):
+    species_list = []
+    sex_list = []
+    for row in data:
+        species = row.get("species")
+        sex = row.get("sex")
+        if species not in species_list:
+            species_list.append(species)
+        if sex not in sex_list:
+            sex_list.append(sex)
 
-read_penguin_data(csv_path)
+    print(species_list)
+    print(sex_list)
+    return species_list, sex_list
+
+
+
+
+
+data = read_penguin_data(csv_path)
+average_body_mass_by_species_and_sex(data)
+
