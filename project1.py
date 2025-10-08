@@ -101,6 +101,28 @@ def correlation_flipper_bill_length(data):
         print(f"{species}: Flipper Length = {result[species][0]:.2f} mm, Bill Length = {result[species][1]:.2f} mm")
     return result
 
+# writing results into a csv
+def write_results_to_csv(data, filename):
+    average_body_mass = average_body_mass_by_species_and_sex(data)
+    correlation_result = correlation_flipper_bill_length(data)
+
+    with open(filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+
+    #average body mass
+        writer.writerow(['Average Body Mass by Species and Sex'])
+        writer.writerow(['Species', 'Sex', 'Average Body Mass (g)'])
+        for species in average_body_mass:
+            for sex in average_body_mass[species]:
+                writer.writerow([species, sex, average_body_mass[species][sex]])
+
+    writer.writerow([])  # empty row
+
+    # average flipper and bill length
+    writer.writerow(['Average Flipper Length and Bill Length by Species'])
+    writer.writerow(['Species', 'Average Flipper Length (mm)', 'Average Bill Length (mm)'])
+    for species in correlation_result:
+        writer.writerow([species, f"{correlation_result[species][0]:.2f}", f"{correlation_result[species][1]:.2f}"])
 
 
 
