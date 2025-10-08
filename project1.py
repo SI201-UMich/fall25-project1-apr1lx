@@ -1,7 +1,9 @@
 ### Name: April Xiao 
 ### Email: aprilx@umich.edu
 ### uniqname: apr1lx
+### student ID: 0934 9568
 ### Course: Fall 2025 - SI 201
+### no contributors, i used AI to help me debug and to help me form an organized structure to my code
 import csv 
 import math 
 csv_path = 'penguins.csv'
