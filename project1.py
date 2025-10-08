@@ -59,6 +59,19 @@ def average_body_mass_by_species_and_sex(data):
     print(result)
     return result
 
+### calculation #2: correlation between flipper_length_mm and bill_length_mm
+species_list = []
+for row in data:
+    species = row.get("species")
+    if species not in species_list and species != "":
+        species_list.append(species)
+        
+
+
+
+
+
+
 
 
 
