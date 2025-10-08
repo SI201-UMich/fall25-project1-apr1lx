@@ -109,4 +109,5 @@ def correlation_flipper_bill_length(data):
 
 data = read_penguin_data(csv_path)
 average_body_mass_by_species_and_sex(data)
+correlation_result = correlation_flipper_bill_length(data)
 
