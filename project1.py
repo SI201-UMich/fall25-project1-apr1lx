@@ -26,12 +26,14 @@ def filter_by_species(data, species):
 def average_body_mass_by_species_and_sex(data):
     species_list = []
     sex_list = []
+
     for row in data:
         species = row.get("species")
         sex = row.get("sex")
-        if species not in species_list:
+
+        if species not in species_list and species != "":
             species_list.append(species)
-        if sex not in sex_list:
+        if sex not in sex_list and sex not in ('', 'NA', 'na', None):
             sex_list.append(sex)
 
     #print(species_list)
@@ -94,10 +96,10 @@ def correlation_flipper_bill_length(data):
             result[species] = (avg_flipper_length, avg_bill_length)
 
     #printing results, more readable 
-        print("Average Flipper Length and Bill Length by Species:")
-        for species in result:
-            print(f"{species}: Flipper Length = {result[species][0]:.2f} mm, Bill Length = {result[species][1]:.2f} mm")
-        return result
+    print("Average Flipper Length and Bill Length by Species:")
+    for species in result:
+        print(f"{species}: Flipper Length = {result[species][0]:.2f} mm, Bill Length = {result[species][1]:.2f} mm")
+    return result
 
 
 
