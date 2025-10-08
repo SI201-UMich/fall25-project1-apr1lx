@@ -130,44 +130,80 @@ def write_results_to_csv(data, filename):
 
 
 # main function to run all calculations and write to csv
-data = read_penguin_data(csv_path)
-average_body_mass_by_species_and_sex(data)
-correlation_result = correlation_flipper_bill_length(data)
-write_results_to_csv(data, 'penguin_analysis_results.csv')
-print("Results written to penguin_analysis_results.csv")
+if __name__ == "__main__":
+    data = read_penguin_data(csv_path)
+    average_body_mass_by_species_and_sex(data)
+    correlation_result = correlation_flipper_bill_length(data)
+    write_results_to_csv(data, 'penguin_analysis_results.csv')
+    print("Results written to penguin_analysis_results.csv")
 
 # test cases
-test_data = [
-    {"species": "Adelie", "sex": "male", "body_mass_g": "4000", "flipper_length_mm": "190", "bill_length_mm": "38.5"},
-    {"species": "Adelie", "sex": "female", "body_mass_g": "3500", "flipper_length_mm": "186", "bill_length_mm": "36.8"},
-    {"species": "Gentoo", "sex": "male", "body_mass_g": "5485", "flipper_length_mm": "217", "bill_length_mm": "47.5"},
-    {"species": "Gentoo", "sex": "female", "body_mass_g": "4680", "flipper_length_mm": "215", "bill_length_mm": "46.8"},
-    {"species": "Chinstrap", "sex": "male", "body_mass_g": "3940", "flipper_length_mm": "196", "bill_length_mm": "48.8"},
-    {"species": "Chinstrap", "sex": "female", "body_mass_g": "3527", "flipper_length_mm": "195", "bill_length_mm": "48.5"},
+import unittest
+
+class TestPenguinDataFunctions(unittest.TestCase):
+
+    def setUp(self):
+        self.test_data = [
+            {"species": "Adelie", "sex": "male", "body_mass_g": "4000", "flipper_length_mm": "190", "bill_length_mm": "38.5"},
+            {"species": "Adelie", "sex": "female", "body_mass_g": "3500", "flipper_length_mm": "186", "bill_length_mm": "36.8"},
+            {"species": "Gentoo", "sex": "male", "body_mass_g": "5485", "flipper_length_mm": "217", "bill_length_mm": "47.5"},
+            {"species": "Gentoo", "sex": "female", "body_mass_g": "4680", "flipper_length_mm": "215", "bill_length_mm": "46.8"},
+            {"species": "Chinstrap", "sex": "male", "body_mass_g": "3940", "flipper_length_mm": "196", "bill_length_mm": "48.8"},
+            {"species": "Chinstrap", "sex": "female", "body_mass_g": "3527", "flipper_length_mm": "195", "bill_length_mm": "48.5"},
    
-    # edge cases:
-    {"species": "Adelie", "sex": "NA", "body_mass_g": "NA", "flipper_length_mm": "", "bill_length_mm": ""},
-    {"species": "", "sex": "female", "body_mass_g": "3900", "flipper_length_mm": "200", "bill_length_mm": "40"},
+            # edge cases:
+            {"species": "Adelie", "sex": "NA", "body_mass_g": "NA", "flipper_length_mm": "", "bill_length_mm": ""},
+            {"species": "", "sex": "female", "body_mass_g": "3900", "flipper_length_mm": "200", "bill_length_mm": "40"},
 ]
+    #tests for average body mass by species and sex (2 general and 2 edge) 
+    def test_average_body_mass_by_species_and_sex_1(self):
+        """General: Adelie averages computed correctly"""
+        avg = average_body_mass_by_species_and_sex(self.sample)
+        self.assertAlmostEqual(avg["Adelie"]["male"], 4000.0, places=2)
+        self.assertAlmostEqual(avg["Adelie"]["female"], 3500.0, places=2)
 
-print("\n---Test Cases---")
+    def test_average_body_mass_by_species_and_sex_2(self):
+        """General: Gentoo averages computed correctly (ignore NA row)"""
+        avg = average_body_mass_by_species_and_sex(self.sample)
+        self.assertAlmostEqual(avg["Gentoo"]["male"], 5485.0, places=2)
+        self.assertAlmostEqual(avg["Gentoo"]["female"], 4680.0, places=2)
 
-#test for read_penguin_data()
-print("read_penguin_data() - not tested since its using file input")
+    def test_average_body_mass_by_species_and_sex_3(self):
+        """Edge: 'NA' sex key should not be included"""
+        avg = average_body_mass_by_species_and_sex(self.sample)
+        self.assertNotIn("NA", avg.get("Adelie", {}))
 
-#test for filter_by_species()
-print('filter_by_species() general case:', filter_by_species(test_data, "Adelie"))
-print('filter_by_species() edge case (no match):', filter_by_species(test_data, "Nonexistent"))
+    def test_average_body_mass_by_species_and_sex_4(self):
+        """Edge: empty/invalid rows produce empty dict"""
+        data = [{"species": "Adelie", "sex": "male", "body_mass_g": "NA"}]
+        self.assertEqual(average_body_mass_by_species_and_sex(data), {})  
 
-#test for average_body_mass_by_species_and_sex()
-print('average_body_mass_by_species_and_sex() general case:', average_body_mass_by_species_and_sex(test_data))
-print('average_body_mass_by_species_and_sex() edge case (no match):', average_body_mass_by_species_and_sex(test_data))
+    #tests for correlation between flipper length and bill length (2 general and 2 edge) 
+    def test_correlation_flipper_bill_length_1(self):
+        """General: returns a tuple (avg_flipper, avg_bill) per species"""
+        res = correlation_flipper_bill_length(self.sample)
+        self.assertIn("Adelie", res)
+        self.assertEqual(len(res["Adelie"]), 2)
 
-#test for correlation_flipper_bill_length()
-print('correlation_flipper_bill_length() general case:', correlation_flipper_bill_length(test_data))
-print('correlation_flipper_bill_length() edge case (no match):', correlation_flipper_bill_length(test_data))
+    def test_correlation_flipper_bill_length_2(self):
+        """General: Adelie averages equal the mean of the two valid rows"""
+        res = correlation_flipper_bill_length(self.sample)
+        # Adelie: (190,38.5) and (186,36.8) -> flipper=188.0, bill=37.65
+        self.assertAlmostEqual(res["Adelie"][0], 188.0, places=2)
+        self.assertAlmostEqual(res["Adelie"][1], 37.65, places=2)
 
-#test for write_results_to_csv()
-print('write_results_to_csv() general case (check output file):')
-write_results_to_csv(test_data, 'test_output.csv')
-print('test_output.csv file created successfully.')
+    def test_correlation_flipper_bill_length_3(self):
+        """Edge: NA/blanks are ignored in averaging"""
+        res = correlation_flipper_bill_length(self.sample)
+        # Gentoo NA row is ignored; averages from valid rows only
+        self.assertGreater(res["Gentoo"][0], 200.0)  # flipper
+        self.assertGreater(res["Gentoo"][1], 40.0)   # bill
+
+    def test_correlation_flipper_bill_length_4(self):
+        """Edge: species with only invalid values is not included"""
+        bad = [{"species": "Adelie", "flipper_length_mm": "", "bill_length_mm": ""}]
+        res = correlation_flipper_bill_length(bad)
+        self.assertNotIn("Adelie", res)
+
+if __name__ == "__main__":
+    unittest.main()
