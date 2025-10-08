@@ -116,22 +116,56 @@ def write_results_to_csv(data, filename):
             for sex in average_body_mass[species]:
                 writer.writerow([species, sex, average_body_mass[species][sex]])
 
-    writer.writerow([])  # empty row
+    #empty row between two sections, figure out later
 
     # average flipper and bill length
-    writer.writerow(['Average Flipper Length and Bill Length by Species'])
-    writer.writerow(['Species', 'Average Flipper Length (mm)', 'Average Bill Length (mm)'])
-    for species in correlation_result:
-        writer.writerow([species, f"{correlation_result[species][0]:.2f}", f"{correlation_result[species][1]:.2f}"])
+        writer.writerow(['Average Flipper Length and Bill Length by Species'])
+        writer.writerow(['Species', 'Average Flipper Length (mm)', 'Average Bill Length (mm)'])
+        for species in correlation_result:
+            writer.writerow([species, f"{correlation_result[species][0]:.2f}", f"{correlation_result[species][1]:.2f}"])
 
 
 
 
-
-
-
-
+# main function to run all calculations and write to csv
 data = read_penguin_data(csv_path)
 average_body_mass_by_species_and_sex(data)
 correlation_result = correlation_flipper_bill_length(data)
+write_results_to_csv(data, 'penguin_analysis_results.csv')
+print("Results written to penguin_analysis_results.csv")
 
+# test cases
+test_data = [
+    {"species": "Adelie", "sex": "male", "body_mass_g": "4000", "flipper_length_mm": "190", "bill_length_mm": "38.5"},
+    {"species": "Adelie", "sex": "female", "body_mass_g": "3500", "flipper_length_mm": "186", "bill_length_mm": "36.8"},
+    {"species": "Gentoo", "sex": "male", "body_mass_g": "5485", "flipper_length_mm": "217", "bill_length_mm": "47.5"},
+    {"species": "Gentoo", "sex": "female", "body_mass_g": "4680", "flipper_length_mm": "215", "bill_length_mm": "46.8"},
+    {"species": "Chinstrap", "sex": "male", "body_mass_g": "3940", "flipper_length_mm": "196", "bill_length_mm": "48.8"},
+    {"species": "Chinstrap", "sex": "female", "body_mass_g": "3527", "flipper_length_mm": "195", "bill_length_mm": "48.5"},
+   
+    # edge cases:
+    {"species": "Adelie", "sex": "NA", "body_mass_g": "NA", "flipper_length_mm": "", "bill_length_mm": ""},
+    {"species": "", "sex": "female", "body_mass_g": "3900", "flipper_length_mm": "200", "bill_length_mm": "40"},
+]
+
+print("\n---Test Cases---")
+
+#test for read_penguin_data()
+print("read_penguin_data() - not tested since its using file input")
+
+#test for filter_by_species()
+print('filter_by_species() general case:', filter_by_species(test_data, "Adelie"))
+print('filter_by_species() edge case (no match):', filter_by_species(test_data, "Nonexistent"))
+
+#test for average_body_mass_by_species_and_sex()
+print('average_body_mass_by_species_and_sex() general case:', average_body_mass_by_species_and_sex(test_data))
+print('average_body_mass_by_species_and_sex() edge case (no match):', average_body_mass_by_species_and_sex(test_data))
+
+#test for correlation_flipper_bill_length()
+print('correlation_flipper_bill_length() general case:', correlation_flipper_bill_length(test_data))
+print('correlation_flipper_bill_length() edge case (no match):', correlation_flipper_bill_length(test_data))
+
+#test for write_results_to_csv()
+print('write_results_to_csv() general case (check output file):')
+write_results_to_csv(test_data, 'test_output.csv')
+print('test_output.csv file created successfully.')
