@@ -60,12 +60,44 @@ def average_body_mass_by_species_and_sex(data):
     return result
 
 ### calculation #2: correlation between flipper_length_mm and bill_length_mm
-species_list = []
-for row in data:
-    species = row.get("species")
-    if species not in species_list and species != "":
-        species_list.append(species)
-        
+def correlation_flipper_bill_length(data):
+    # getting unique species
+    species_list = []
+    for row in data:
+        species = row.get("species")
+        if species not in species_list and species != "":
+            species_list.append(species)
+
+# calculating averages for each species
+    result = {}
+    for species in species_list:
+        total_flipper_length = 0
+        total_bill_length = 0
+        count = 0
+
+        for row in data:
+            if row.get("species") == species:
+                flipper_length = row.get("flipper_length_mm")
+                bill_length = row.get("bill_length_mm")
+
+            #skipping empty values 
+                if flipper_length and bill_length and flipper_length not in ('', 'NA', 'na', None) and bill_length not in ('', 'NA', 'na', None):
+                    try:
+                        total_flipper_length += float(flipper_length)
+                        total_bill_length += float(bill_length)
+                        count += 1
+                    except:
+                        pass
+        if count > 0:
+            avg_flipper_length = total_flipper_length / count
+            avg_bill_length = total_bill_length / count
+            result[species] = (avg_flipper_length, avg_bill_length)
+
+    #printing results, more readable 
+        print("Average Flipper Length and Bill Length by Species:")
+        for species in result:
+            print(f"{species}: Flipper Length = {result[species][0]:.2f} mm, Bill Length = {result[species][1]:.2f} mm")
+        return result
 
 
 
