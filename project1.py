@@ -3,7 +3,7 @@
 ### uniqname: apr1lx
 ### student ID: 0934 9568
 ### Course: Fall 2025 - SI 201
-### no contributors, i used AI to help me debug and to help me form an organized structure to my code
+### no contributors, I used AI to help me debug and to help me form an organized structure to my code
 import csv 
 import math 
 import os
@@ -66,7 +66,7 @@ def average_body_mass_by_species_and_sex(data):
 
         if species_averages:
             result[species] = species_averages
-            
+
     print(result)
     return result
 
@@ -126,6 +126,7 @@ def write_results_to_csv(data, filename):
                 writer.writerow([species, sex, average_body_mass[species][sex]])
 
     #empty row between two sections, figure out later
+        writer.writerow([])
 
     # average flipper and bill length
         writer.writerow(['Average Flipper Length and Bill Length by Species'])
@@ -141,11 +142,14 @@ def write_results_to_csv(data, filename):
 
 # main function to run all calculations and write to csv
 if __name__ == "__main__":
-    data = read_penguin_data(csv_path)
-    average_body_mass_by_species_and_sex(data)
-    correlation_result = correlation_flipper_bill_length(data)
-    write_results_to_csv(data, 'penguin_analysis_results.csv')
-    print("Results written to penguin_analysis_results.csv")
+    try:
+        data = read_penguin_data(csv_path)
+        average_body_mass_by_species_and_sex(data)
+        correlation_result = correlation_flipper_bill_length(data)
+        write_results_to_csv(data, 'penguin_analysis_results.csv')
+        print("Results written to penguin_analysis_results.csv")
+    except:
+        print(f"penguins.csv not found")
 
 
 
