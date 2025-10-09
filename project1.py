@@ -1,8 +1,8 @@
+### SI 201 Project 1
 ### Name: April Xiao 
 ### Email: aprilx@umich.edu
 ### uniqname: apr1lx
 ### student ID: 0934 9568
-### Course: Fall 2025 - SI 201
 ### no contributors, I used AI to help me debug and to help me form an organized structure to my code
 import csv 
 import math 
@@ -136,23 +136,17 @@ def write_results_to_csv(data, filename):
 
 
 
-
-
-
-
 # main function to run all calculations and write to csv
 if __name__ == "__main__":
     try:
         data = read_penguin_data(csv_path)
         average_body_mass_by_species_and_sex(data)
         correlation_result = correlation_flipper_bill_length(data)
-        write_results_to_csv(data, 'penguin_analysis_results.csv')
-        print("Results written to penguin_analysis_results.csv")
+        output_path = os.path.join(BASE_DIR, 'penguin_analysis_results.csv')
+        write_results_to_csv(data, output_path)
+        print(f"Results written to: {output_path}")
     except:
         print(f"penguins.csv not found")
-
-
-
 
 
 
