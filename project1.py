@@ -58,7 +58,7 @@ def average_body_mass_by_species_and_sex(data):
                         try:
                             total_mass += float(body_mass)
                             count += 1
-                        except:
+                        except ValueError:
                             pass
             if count > 0:
                 average_mass = total_mass / count
