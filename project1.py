@@ -6,7 +6,10 @@
 ### no contributors, i used AI to help me debug and to help me form an organized structure to my code
 import csv 
 import math 
-csv_path = 'penguins.csv'
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+csv_path = os.path.join(BASE_DIR, 'penguins.csv')
+
 
 def read_penguin_data(csv_file):
     data = []
@@ -129,6 +132,9 @@ def write_results_to_csv(data, filename):
 
 
 
+
+
+
 # main function to run all calculations and write to csv
 if __name__ == "__main__":
     data = read_penguin_data(csv_path)
@@ -137,13 +143,21 @@ if __name__ == "__main__":
     write_results_to_csv(data, 'penguin_analysis_results.csv')
     print("Results written to penguin_analysis_results.csv")
 
+
+
+
+
+
+
+
+
 # test cases
 import unittest
 
 class TestPenguinDataFunctions(unittest.TestCase):
 
     def setUp(self):
-        self.test_data = [
+        self.sample = [
             {"species": "Adelie", "sex": "male", "body_mass_g": "4000", "flipper_length_mm": "190", "bill_length_mm": "38.5"},
             {"species": "Adelie", "sex": "female", "body_mass_g": "3500", "flipper_length_mm": "186", "bill_length_mm": "36.8"},
             {"species": "Gentoo", "sex": "male", "body_mass_g": "5485", "flipper_length_mm": "217", "bill_length_mm": "47.5"},
