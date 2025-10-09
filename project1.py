@@ -3,7 +3,7 @@
 ### Email: aprilx@umich.edu
 ### uniqname: apr1lx
 ### student ID: 0934 9568
-### no contributors, I used AI to help me debug and to help me form an organized structure to my code
+### I worked alone, I used AI to help me debug and to help me form an organized structure to my code
 import csv 
 import math 
 import os
@@ -145,8 +145,8 @@ if __name__ == "__main__":
         output_path = os.path.join(BASE_DIR, 'penguin_analysis_results.csv')
         write_results_to_csv(data, output_path)
         print(f"Results written to: {output_path}")
-    except:
-        print(f"penguins.csv not found")
+    except FileNotFoundError:
+        print(f"penguins.csv not found at:", csv_path)
 
 
 
@@ -160,18 +160,26 @@ class TestPenguinDataFunctions(unittest.TestCase):
 
     def setUp(self):
         self.sample = [
-            {"species": "Adelie", "sex": "male", "body_mass_g": "4000", "flipper_length_mm": "190", "bill_length_mm": "38.5"},
-            {"species": "Adelie", "sex": "female", "body_mass_g": "3500", "flipper_length_mm": "186", "bill_length_mm": "36.8"},
-            {"species": "Gentoo", "sex": "male", "body_mass_g": "5485", "flipper_length_mm": "217", "bill_length_mm": "47.5"},
-            {"species": "Gentoo", "sex": "female", "body_mass_g": "4680", "flipper_length_mm": "215", "bill_length_mm": "46.8"},
-            {"species": "Chinstrap", "sex": "male", "body_mass_g": "3940", "flipper_length_mm": "196", "bill_length_mm": "48.8"},
-            {"species": "Chinstrap", "sex": "female", "body_mass_g": "3527", "flipper_length_mm": "195", "bill_length_mm": "48.5"},
-   
-            # edge cases:
-            {"species": "Adelie", "sex": "NA", "body_mass_g": "NA", "flipper_length_mm": "", "bill_length_mm": ""},
-            {"species": "", "sex": "female", "body_mass_g": "3900", "flipper_length_mm": "200", "bill_length_mm": "40"},
-]
-    #tests for average body mass by species and sex (2 general and 2 edge) 
+            {"species": "Adelie", "sex": "male",   "body_mass_g": "4000",
+             "flipper_length_mm": "190", "bill_length_mm": "38.5"},
+            {"species": "Adelie", "sex": "female", "body_mass_g": "3500",
+             "flipper_length_mm": "186", "bill_length_mm": "36.8"},
+            {"species": "Gentoo", "sex": "male",   "body_mass_g": "5485",
+             "flipper_length_mm": "217", "bill_length_mm": "47.5"},
+            {"species": "Gentoo", "sex": "female", "body_mass_g": "4680",
+             "flipper_length_mm": "215", "bill_length_mm": "46.8"},
+            {"species": "Chinstrap", "sex": "male","body_mass_g": "3940",
+             "flipper_length_mm": "196", "bill_length_mm": "48.8"},
+            {"species": "Chinstrap", "sex": "female","body_mass_g": "3527",
+             "flipper_length_mm": "195", "bill_length_mm": "48.5"},
+            # edge rows to be skipped/ignored
+            {"species": "Gentoo", "sex": "female", "body_mass_g": "NA",
+             "flipper_length_mm": "NA", "bill_length_mm": ""},
+            {"species": "", "sex": "female", "body_mass_g": "3900",
+             "flipper_length_mm": "200", "bill_length_mm": "40"},
+        ]
+
+    #tests for average body mass by species and sex 
     def test_average_body_mass_by_species_and_sex_1(self):
         """General: Adelie averages computed correctly"""
         avg = average_body_mass_by_species_and_sex(self.sample)
@@ -190,36 +198,86 @@ class TestPenguinDataFunctions(unittest.TestCase):
         self.assertNotIn("NA", avg.get("Adelie", {}))
 
     def test_average_body_mass_by_species_and_sex_4(self):
-        """Edge: empty/invalid rows produce empty dict"""
+        """Edge: all invalid rows produce empty dict"""
         data = [{"species": "Adelie", "sex": "male", "body_mass_g": "NA"}]
-        self.assertEqual(average_body_mass_by_species_and_sex(data), {})  
+        self.assertEqual(average_body_mass_by_species_and_sex(data), {}) 
 
-    #tests for correlation between flipper length and bill length (2 general and 2 edge) 
+    #tests for correlation between flipper length and bill length  
     def test_correlation_flipper_bill_length_1(self):
-        """General: returns a tuple (avg_flipper, avg_bill) per species"""
+        """General: returns tuple (avg_flipper, avg_bill) per species"""
         res = correlation_flipper_bill_length(self.sample)
         self.assertIn("Adelie", res)
         self.assertEqual(len(res["Adelie"]), 2)
 
     def test_correlation_flipper_bill_length_2(self):
-        """General: Adelie averages equal the mean of the two valid rows"""
+        """General: Adelie averages are the mean of the two valid rows"""
         res = correlation_flipper_bill_length(self.sample)
-        # Adelie: (190,38.5) and (186,36.8) -> flipper=188.0, bill=37.65
+        # Adelie: flipper (190,186) -> 188.0 ; bill (38.5,36.8) -> 37.65
         self.assertAlmostEqual(res["Adelie"][0], 188.0, places=2)
         self.assertAlmostEqual(res["Adelie"][1], 37.65, places=2)
 
     def test_correlation_flipper_bill_length_3(self):
-        """Edge: NA/blanks are ignored in averaging"""
+        """Edge: NA/blanks ignored; Gentoo averages > sensible thresholds"""
         res = correlation_flipper_bill_length(self.sample)
-        # Gentoo NA row is ignored; averages from valid rows only
         self.assertGreater(res["Gentoo"][0], 200.0)  # flipper
         self.assertGreater(res["Gentoo"][1], 40.0)   # bill
 
     def test_correlation_flipper_bill_length_4(self):
-        """Edge: species with only invalid values is not included"""
+        """Edge: species with only invalid numeric values is excluded"""
         bad = [{"species": "Adelie", "flipper_length_mm": "", "bill_length_mm": ""}]
         res = correlation_flipper_bill_length(bad)
         self.assertNotIn("Adelie", res)
+
+    #test for filer by species
+    def test_filter_by_species_1(self):
+        """General: returns only Adelie rows"""
+        rows = filter_by_species(self.sample, "Adelie")
+        self.assertTrue(all(r["species"] == "Adelie" for r in rows))
+        self.assertGreaterEqual(len(rows), 2)
+
+    def test_filter_by_species_2(self):
+        """General: returns only Gentoo rows"""
+        rows = filter_by_species(self.sample, "Gentoo")
+        self.assertTrue(all(r["species"] == "Gentoo" for r in rows))
+
+    def test_filter_by_species_3(self):
+        """Edge: nonexistent species returns empty list"""
+        self.assertEqual(filter_by_species(self.sample, "Nonexistent"), [])
+
+    def test_filter_by_species_4(self):
+        """Edge: blank species filter should not match normal species"""
+        rows = filter_by_species(self.sample, "")
+        self.assertTrue(all(r["species"] == "" for r in rows))
+
+    #test for write results to csv
+    def test_write_results_to_csv_general(self):
+        """General: file is created in BASE_DIR and has both section headers"""
+        out_path = os.path.join(BASE_DIR, "tmp_results.csv")
+        try:
+            write_results_to_csv(self.sample, out_path)
+            self.assertTrue(os.path.exists(out_path))
+            with open(out_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            self.assertIn("Average Body Mass by Species and Sex", content)
+            self.assertIn("Average Flipper Length and Bill Length by Species", content)
+        finally:
+            if os.path.exists(out_path):
+                os.remove(out_path)
+
+    def test_write_results_to_csv_empty_input(self):
+        """Edge: empty input still creates file with headers"""
+        out_path = os.path.join(BASE_DIR, "tmp_results_empty.csv")
+        try:
+            write_results_to_csv([], out_path)
+            self.assertTrue(os.path.exists(out_path))
+            with open(out_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            self.assertIn("Average Body Mass by Species and Sex", content)
+            self.assertIn("Average Flipper Length and Bill Length by Species", content)
+        finally:
+            if os.path.exists(out_path):
+                os.remove(out_path)
+
 
 if __name__ == "__main__":
     unittest.main()
