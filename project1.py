@@ -47,7 +47,7 @@ def average_body_mass_by_species_and_sex(data):
 
     result = {}
     for species in species_list:
-        result[species] = {}
+        species_averages = {}
         for sex in sex_list:
             total_mass = 0
             count = 0
@@ -62,7 +62,11 @@ def average_body_mass_by_species_and_sex(data):
                             pass
             if count > 0:
                 average_mass = total_mass / count
-                result[species][sex] = average_mass
+                species_averages[sex] = average_mass
+
+        if species_averages:
+            result[species] = species_averages
+            
     print(result)
     return result
 
